@@ -1,8 +1,8 @@
 import * as THREE from 'three';
+import * as dat from 'dat.gui';
 import { OrbitControls } from 'three-orbitcontrols-ts';
 import GLTFLoader from 'three-gltf-loader';
 const GLTF_PATH = './gltf/shadowman/scene.gltf';
-const ANIM_INDEX = 2;
 
 class Simple {
   private _width: number;
@@ -15,6 +15,8 @@ class Simple {
   private _clock: THREE.Clock;
   private _mixer: THREE.AnimationMixer;
   private _animations: THREE.AnimationClip[];
+  private _guiControls: any;
+  private _previousIndex: number = 0;
 
   constructor() {
     this._clock = new THREE.Clock();
@@ -28,7 +30,7 @@ class Simple {
 
     this._scene = new THREE.Scene();
     this._camera = new THREE.PerspectiveCamera(50, this._width / this._height, 1, 100);
-    this._camera.position.set(0, 1, 5);
+    this._camera.position.set(0, 3, 5);
 
     this._controls = new OrbitControls(this._camera, this._renderer.domElement);
     this._controls.enablePan = true;
@@ -57,10 +59,24 @@ class Simple {
 
       if (this._animations && this._animations.length) {
         this._mixer = new THREE.AnimationMixer(character);
-        this.playAnimation(ANIM_INDEX);
+        this.setupGUI();
       }
 
       this.render();
+    });
+  }
+
+  setupGUI() {
+    this._guiControls = new (function() {
+      this.animations = {};
+    })();
+    const gui = new dat.GUI();
+    let animationNames = {};
+    for (let i = 0; i < this._animations.length; i++) {
+      animationNames[`'${this._animations[i].name}'`] = i;
+    }
+    gui.add(this._guiControls, 'animations', animationNames).onChange(index => {
+      this.playAnimation(index);
     });
   }
 
@@ -76,7 +92,9 @@ class Simple {
   }
 
   playAnimation(index) {
+    this._mixer.clipAction(this._animations[this._previousIndex]).stop();
     this._mixer.clipAction(this._animations[index]).play();
+    this._previousIndex = index;
   }
 }
 
