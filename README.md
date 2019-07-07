@@ -1,5 +1,5 @@
-# three-ts-practice
-three.js x TypeScript My Practice
+# three-ts-gltf-practice
+three.js x TypeScript x glTF My Practice
 
 ## Build Setup
 
