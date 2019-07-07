@@ -33,6 +33,8 @@
     "@types/webgl2": "0.0.4",
     "dat.gui": "^0.7.6",
     "stats.js": "^0.17.0",
-    "three": "^0.105.2"
+    "three": "^0.105.2",
+    "three-gltf-loader": "^1.106.0",
+    "three-orbitcontrols-ts": "^0.1.2"
   }
 }
