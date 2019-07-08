@@ -5,6 +5,9 @@ three.js x TypeScript x glTF My Practice
 [Sketchfab - S Shadow Animations v3](https://sketchfab.com/3d-models/s-shadow-animations-v3-223a3a47ae43473a9a8ddd1284f6149f)  
 author: thesharks333  
 
+[Skechfab - Thinking Emoji](https://sketchfab.com/3d-models/thinking-emoji-42140a29ce224e33a3e96c3e4963c4e3)  
+author: yezzey  
+
 # Reference page
 [BlenderでFBX形式をglTF形式に変換してThree.jsでアニメーションさせる](https://ryo620.org/2018/02/threejs-animation/)  
 [WebGL特集】第8回：各ツールからglTF形式でアニメーション出力](https://mox-motion.com/blog/webgl08/)  
