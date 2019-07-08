@@ -35,6 +35,7 @@
     "stats.js": "^0.17.0",
     "three": "^0.105.2",
     "three-gltf-loader": "^1.106.0",
+    "three-instanced-mesh": "^0.96.2",
     "three-orbitcontrols-ts": "^0.1.2"
   }
 }
