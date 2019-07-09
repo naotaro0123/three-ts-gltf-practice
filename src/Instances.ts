@@ -65,9 +65,14 @@ class Instances {
       const cluster2 = new InstancedMesh(geometries[1], materials[1], instanceCount, false, false, true);
 
       const vector3 = new THREE.Vector3();
-      const quaternion = new THREE.Quaternion();
 
       for (let i = 0; i < instanceCount; i++) {
+        const quaternion = new THREE.Quaternion();
+        // const axis = new THREE.Vector3(0, 2, 0).normalize();
+        const axis = new THREE.Vector3(0, 0, 0).normalize();
+        const ANY_ANGLERAD = Math.floor(Math.random() * 60);
+        console.log(ANY_ANGLERAD);
+        quaternion.setFromAxisAngle(axis, ANY_ANGLERAD);
         cluster1.setQuaternionAt(i, quaternion);
         cluster2.setQuaternionAt(i, quaternion);
         // Range(0 ~ 5 => -2.5 ~ 2.5)
