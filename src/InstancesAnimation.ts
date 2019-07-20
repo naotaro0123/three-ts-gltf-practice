@@ -1,10 +1,11 @@
 import * as THREE from 'three';
+import * as dat from 'dat.gui';
 import { OrbitControls } from 'three-orbitcontrols-ts';
 const InstancedMesh = require('three-instanced-mesh')(THREE);
 import GLTFLoader from 'three-gltf-loader';
-const GLTF_PATH = './gltf/thinking_emoji/scene.gltf';
+const GLTF_PATH = './gltf/shadowman/scene.gltf';
 
-class Instances {
+class InstancesAnimation {
   private _width: number;
   private _height: number;
   private _renderer: THREE.WebGLRenderer;
@@ -12,8 +13,15 @@ class Instances {
   private _camera: THREE.PerspectiveCamera;
   private _controls: OrbitControls;
   private _loader: GLTFLoader;
+  private _guiControls: any;
+  private _clock: THREE.Clock;
+  private _mixer: THREE.AnimationMixer;
+  private _animations: THREE.AnimationClip[];
+  private _previousIndex: number = 0;
 
   constructor() {
+    this._clock = new THREE.Clock();
+
     this._width = window.innerWidth;
     this._height = window.innerHeight;
     this._renderer = new THREE.WebGLRenderer();
@@ -49,7 +57,8 @@ class Instances {
       const gltf = data;
       const character = gltf.scene;
       character.traverse(node => {
-        if (node.type === 'Mesh') {
+        console.dir(node);
+        if (node.type === 'SkinnedMesh') {
           const mesh = node as THREE.Mesh;
           geometries[index] = mesh.geometry;
           materials[index] = mesh.material;
@@ -57,9 +66,14 @@ class Instances {
         }
       });
 
+      this._animations = gltf.animations;
+      if (this._animations && this._animations.length) {
+        this._mixer = new THREE.AnimationMixer(character);
+        this.setupGUI();
+      }
+
       const instanceCount = 100;
-      const cluster1 = new InstancedMesh(geometries[0], materials[0], instanceCount, false, false, true);
-      const cluster2 = new InstancedMesh(geometries[1], materials[1], instanceCount, false, false, true);
+      const cluster1 = new InstancedMesh(geometries[2], materials[2], instanceCount, false, false, true);
 
       const vector3 = new THREE.Vector3();
 
@@ -71,7 +85,6 @@ class Instances {
         console.log(ANY_ANGLERAD);
         quaternion.setFromAxisAngle(axis, ANY_ANGLERAD);
         cluster1.setQuaternionAt(i, quaternion);
-        cluster2.setQuaternionAt(i, quaternion);
         // Range(0 ~ 5 => -2.5 ~ 2.5)
         const x = Math.random() * 5 - 2.5;
         // Range(0 ~ 2)
@@ -79,16 +92,33 @@ class Instances {
         // Range(0 ~ 5 => -2.5 ~ 2.5)
         const z = Math.random() * 5 - 2.5;
         cluster1.setPositionAt(i, vector3.set(x, y, z));
-        cluster2.setPositionAt(i, vector3.set(x - 0.1, y - 0.15, z + 0.3));
         cluster1.setScaleAt(i, vector3.set(0.003, 0.003, 0.003));
-        cluster2.setScaleAt(i, vector3.set(0.2, 0.2, 0.05));
       }
 
       this._scene.add(cluster1);
-      this._scene.add(cluster2);
 
       this.render();
     });
+  }
+
+  setupGUI() {
+    this._guiControls = new (function() {
+      this.animations = {};
+    })();
+    const gui = new dat.GUI();
+    let animationNames = {};
+    for (let i = 0; i < this._animations.length; i++) {
+      animationNames[`'${this._animations[i].name}'`] = i;
+    }
+    gui.add(this._guiControls, 'animations', animationNames).onChange(index => {
+      this.playAnimation(index);
+    });
+  }
+
+  playAnimation(index) {
+    this._mixer.clipAction(this._animations[this._previousIndex]).stop();
+    this._mixer.clipAction(this._animations[index]).play();
+    this._previousIndex = index;
   }
 
   render() {
@@ -99,4 +129,4 @@ class Instances {
   }
 }
 
-export default Instances;
+export default InstancesAnimation;
