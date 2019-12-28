@@ -1,64 +1,64 @@
 import * as THREE from 'three';
 import * as dat from 'dat.gui';
-import { OrbitControls } from 'three-orbitcontrols-ts';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import GLTFLoader from 'three-gltf-loader';
 const GLTF_PATH = './gltf/shadowman/scene.gltf';
 
 class Simple {
-  private _width: number;
-  private _height: number;
-  private _renderer: THREE.WebGLRenderer;
-  private _scene: THREE.Scene;
-  private _camera: THREE.PerspectiveCamera;
-  private _controls: OrbitControls;
-  private _loader: GLTFLoader;
-  private _clock: THREE.Clock;
-  private _mixer: THREE.AnimationMixer;
-  private _animations: THREE.AnimationClip[];
-  private _guiControls: any;
-  private _previousIndex: number = 0;
+  private width: number;
+  private height: number;
+  private renderer: THREE.WebGLRenderer;
+  private scene: THREE.Scene;
+  private camera: THREE.PerspectiveCamera;
+  private controls: OrbitControls;
+  private loader: GLTFLoader;
+  private clock: THREE.Clock;
+  private mixer: THREE.AnimationMixer;
+  private animations: THREE.AnimationClip[];
+  private guiControls: any;
+  private previousIndex: number = 0;
 
   constructor() {
-    this._clock = new THREE.Clock();
+    this.clock = new THREE.Clock();
 
-    this._width = window.innerWidth;
-    this._height = window.innerHeight;
-    this._renderer = new THREE.WebGLRenderer();
-    this._renderer.setSize(this._width, this._height);
-    this._renderer.setClearColor(0xf3f3f3, 1.0);
-    document.body.appendChild(this._renderer.domElement);
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setSize(this.width, this.height);
+    this.renderer.setClearColor(0xf3f3f3, 1.0);
+    document.body.appendChild(this.renderer.domElement);
 
-    this._scene = new THREE.Scene();
-    this._camera = new THREE.PerspectiveCamera(50, this._width / this._height, 1, 100);
-    this._camera.position.set(0, 3, 5);
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 1, 100);
+    this.camera.position.set(0, 3, 5);
 
-    this._controls = new OrbitControls(this._camera, this._renderer.domElement);
-    this._controls.enablePan = true;
-    this._controls.enableZoom = true;
-    this._controls.keyPanSpeed = 0.0;
-    this._controls.maxDistance = 5000.0;
-    this._controls.maxPolarAngle = Math.PI * 0.495;
-    this._controls.autoRotate = true;
-    this._controls.autoRotateSpeed = 1.0;
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enablePan = true;
+    this.controls.enableZoom = true;
+    this.controls.keyPanSpeed = 0.0;
+    this.controls.maxDistance = 5000.0;
+    this.controls.maxPolarAngle = Math.PI * 0.495;
+    this.controls.autoRotate = true;
+    this.controls.autoRotateSpeed = 1.0;
 
     const light = new THREE.AmbientLight(0xffffff, 1);
-    this._scene.add(light);
+    this.scene.add(light);
 
     const grid = new THREE.GridHelper(10, 5);
-    this._scene.add(grid);
+    this.scene.add(grid);
 
-    this._loader = new GLTFLoader();
-    this._loader.load(GLTF_PATH, data => {
+    this.loader = new GLTFLoader();
+    this.loader.load(GLTF_PATH, data => {
       const gltf = data;
       const character = gltf.scene;
       character.position.set(0, 0, 0);
       character.scale.set(0.005, 0.005, 0.005);
-      this._scene.add(character);
+      this.scene.add(character);
 
-      this._animations = gltf.animations;
+      this.animations = gltf.animations;
 
-      if (this._animations && this._animations.length) {
-        this._mixer = new THREE.AnimationMixer(character);
+      if (this.animations && this.animations.length) {
+        this.mixer = new THREE.AnimationMixer(character);
         this.setupGUI();
       }
 
@@ -67,34 +67,34 @@ class Simple {
   }
 
   setupGUI() {
-    this._guiControls = new (function() {
+    this.guiControls = new (function() {
       this.animations = {};
     })();
     const gui = new dat.GUI();
     let animationNames = {};
-    for (let i = 0; i < this._animations.length; i++) {
-      animationNames[`'${this._animations[i].name}'`] = i;
+    for (let i = 0; i < this.animations.length; i++) {
+      animationNames[`'${this.animations[i].name}'`] = i;
     }
-    gui.add(this._guiControls, 'animations', animationNames).onChange(index => {
+    gui.add(this.guiControls, 'animations', animationNames).onChange(index => {
       this.playAnimation(index);
     });
   }
 
-  render() {
-    this._renderer.render(this._scene, this._camera);
-    this._controls.update();
+  playAnimation(index) {
+    this.mixer.clipAction(this.animations[this.previousIndex]).stop();
+    this.mixer.clipAction(this.animations[index]).play();
+    this.previousIndex = index;
+  }
 
-    if (this._mixer) {
-      this._mixer.update(this._clock.getDelta());
+  render() {
+    this.renderer.render(this.scene, this.camera);
+    this.controls.update();
+
+    if (this.mixer) {
+      this.mixer.update(this.clock.getDelta());
     }
 
     requestAnimationFrame(() => this.render());
-  }
-
-  playAnimation(index) {
-    this._mixer.clipAction(this._animations[this._previousIndex]).stop();
-    this._mixer.clipAction(this._animations[index]).play();
-    this._previousIndex = index;
   }
 }
 
