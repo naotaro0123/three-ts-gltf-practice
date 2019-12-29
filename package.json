@@ -32,7 +32,6 @@
     "@types/webgl2": "0.0.5",
     "dat.gui": "^0.7.6",
     "stats.js": "^0.17.0",
-    "three": "^0.112.1",
-    "three-gltf-loader": "^1.111.0"
+    "three": "^0.112.1"
   }
 }

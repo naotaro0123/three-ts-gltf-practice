@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import GLTFLoader from 'three-gltf-loader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 const GLTF_PATH = './gltf/thinking_emoji/scene.gltf';
 
 class Instances {
@@ -10,7 +10,6 @@ class Instances {
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   private controls: OrbitControls;
-  private loader: GLTFLoader;
 
   constructor() {
     this.width = window.innerWidth;
@@ -39,8 +38,8 @@ class Instances {
     const grid = new THREE.GridHelper(10, 5);
     this.scene.add(grid);
 
-    this.loader = new GLTFLoader();
-    this.loader.load(GLTF_PATH, data => {
+    const loader = new GLTFLoader();
+    loader.load(GLTF_PATH, data => {
       let geometries: THREE.BufferGeometry[] | THREE.Geometry[] = [];
       let materials: THREE.MeshStandardMaterial | THREE.MeshStandardMaterial[] = [];
       let index = 0;
