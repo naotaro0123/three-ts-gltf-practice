@@ -2,10 +2,12 @@ import * as THREE from 'three';
 import * as dat from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-const GLTF_PATH = './gltf/shadowman/scene.gltf';
+// const GLTF_PATH = './gltf/shadowman/scene.gltf';
+const GLTF_PATH = './gltf/cube.gltf';
 const characterInfo = {
   position: [0, 0, 0],
-  scale: [0.005, 0.005, 0.005]
+  // scale: [0.005, 0.005, 0.005]
+  scale: [0.5, 0.5, 0.5]
 };
 
 class Simple {
@@ -57,6 +59,9 @@ class Simple {
       const [scaleX, scaleY, scaleZ] = characterInfo.scale;
       character.scale.set(scaleX, scaleY, scaleZ);
       this.scene.add(character);
+
+      const skeltonHelper = new THREE.SkeletonHelper(character.children[0]);
+      this.scene.add(skeltonHelper);
 
       this.animations = gltf.animations;
 
